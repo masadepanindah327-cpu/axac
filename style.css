@@ -1,0 +1,86 @@
+/* axac. Dial: ENERGY 2 / RHYTHM 2 / MOTION 1.
+   Gelap tetap: logo axac berlatar hitam murni, jadi halaman memakai hitam yang sama (tanpa sambungan terlihat).
+   Palet dari logo: hitam, perak-lavender (teks), satu aksen violet #A78BFA (tombol utama, progress, kalkulator aktif).
+   Font: sistem. Serif (Georgia) untuk angka besar dan judul agar senada dengan huruf logo yang runcing. Sisanya sans.
+   Motif: garis tebal 4px perak di atas tiap bagian. Radius 2px, tanpa bayangan. */
+:root{--bg:#000;--surface:#14111C;--ink:#ECE8F5;--muted:#B4AEC4;--line:#8A82A0;--accent:#A78BFA;--on-accent:#0B0A10;--err:#FF8A80;--serif:Georgia,"Times New Roman",serif}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.5 "Helvetica Neue",Arial,"Liberation Sans",sans-serif;font-variant-numeric:tabular-nums}
+a,button,.opt,input[type=radio]{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.5}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--on-accent);padding:.75rem 1rem;z-index:5}
+.skip:focus{left:0}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem 1.5rem;padding:.5rem 1rem}
+.logo{display:inline-flex;min-height:56px}
+.logo img{display:block;border-radius:2px}
+.top nav{display:flex;gap:1.25rem}
+.top nav a{min-height:44px;display:inline-flex;align-items:center;color:var(--ink);font-weight:700}
+.top nav a:hover{color:var(--accent)}
+main{max-width:1040px;margin:0 auto;padding:0 1rem 3rem}
+.total{padding:1.5rem 0 2rem}
+.total h1{margin:0;display:flex;flex-direction:column;gap:.25rem}
+.lbl{font-weight:700}
+.num{font-family:var(--serif);font-size:clamp(2.5rem,12vw,5.5rem);font-weight:700;letter-spacing:-.03em;line-height:1;overflow-wrap:anywhere}
+.muted{color:var(--muted);margin:.5rem 0 0}
+.cols{display:grid;gap:2.5rem;grid-template-columns:minmax(0,1fr)}
+section[id]{border-top:4px solid var(--ink);padding-top:1rem}
+h2{margin:0 0 1rem;font:700 1.5rem var(--serif);letter-spacing:-.01em}
+h3{margin:0;font-size:1.125rem;overflow-wrap:anywhere}
+.form{display:grid;gap:.75rem;margin-bottom:1.5rem}
+label{display:grid;gap:.25rem;font-weight:700;font-size:.9375rem}
+input:not([type=radio]){width:100%;min-height:44px;font:inherit;font-weight:400;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:2px;padding:.5rem .75rem}
+input:not([type=radio]):hover{border-color:var(--ink)}
+.btn{min-height:44px;padding:0 1rem;font:inherit;font-weight:700;color:var(--ink);background:transparent;border:2px solid var(--line);border-radius:2px;transition:background-color .12s,color .12s,border-color .12s}
+.btn:hover{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.btn:active{transform:translateY(1px)}
+.btn.primary,.btn[aria-pressed=true]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.primary:hover,.btn[aria-pressed=true]:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.err{margin:0;color:var(--err);font-weight:700}
+.err:empty{display:none}
+#state{margin:0 0 1rem}
+#state.bad{color:var(--err);font-weight:700}
+.goals{list-style:none;margin:0;padding:0}
+.goal{border-top:2px solid var(--line);padding:1rem 0;display:grid;gap:.5rem}
+.goal-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.25rem 1rem;align-items:baseline}
+.amt{font-weight:700}
+.bar{height:16px;border:2px solid var(--line);background:var(--surface);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.tx{display:grid;gap:.5rem;grid-template-columns:1fr 1fr}
+.tx label,.tx .err{grid-column:1/-1}
+.tx .btn{width:100%}
+.picker{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem}
+.out{border:2px solid var(--accent);background:var(--surface);padding:1rem;display:grid;gap:.75rem}
+.out dl{margin:0;display:grid;gap:.5rem}
+.out dt{color:var(--muted);font-size:.9375rem}
+.out dd{margin:0;font-weight:700;font-size:1.125rem;overflow-wrap:anywhere}
+.out dl>div:first-child dd{font:700 clamp(1.5rem,6vw,2rem) var(--serif)}
+.out .note{margin:0;color:var(--muted);font-size:.875rem}
+.calc{display:grid;gap:.5rem;max-width:360px}
+.disp{display:grid;gap:.25rem;padding:.75rem 1rem;border:2px solid var(--line);border-radius:2px;background:var(--surface);text-align:right;min-height:96px;align-content:end}
+.hist{color:var(--muted);font-size:.9375rem;min-height:1.4em}
+.val{font:700 2rem var(--serif);overflow-wrap:anywhere}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.key{min-height:56px;font-size:1.25rem;padding:0}
+.key.op{border-color:var(--accent);color:var(--accent)}
+.key.op:hover{color:var(--bg);border-color:var(--ink)}
+.key.wide{grid-column:span 2}
+.foot{max-width:1040px;margin:0 auto;padding:0 1rem 2rem}
+@media (min-width:600px){
+  .form{grid-template-columns:1fr 1fr;align-items:end}
+  .form .err,.form .note{grid-column:1/-1}
+  .tx{grid-template-columns:1fr auto auto auto;align-items:end}
+  .tx label,.tx .err{grid-column:auto}
+  .tx .err{grid-column:1/-1}
+  .tx .btn{width:auto}
+}
+@media (min-width:720px){
+  .total{background:url(logo-512.png) right center/220px 220px no-repeat;min-height:220px;padding-right:250px;display:flex;flex-direction:column;justify-content:center}
+}
+@media (min-width:880px){
+  .cols{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:3rem;align-items:start}
+  #panel .form{grid-template-columns:1fr}
+  #goal-form{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.btn:active{transform:none}}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>axac | Tabungan dan kalkulator</title>
+<meta name="description" content="Catat target tabungan dan pakai kalkulator: biasa, target, bunga majemuk, cicilan, persentase, dana darurat, bagi tagihan.">
+<link rel="icon" href="logo-128.png" type="image/png">
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#tabungan">Lewati ke konten</a>
+<header class="top">
+  <a class="logo" href="#top" aria-label="axac, ke atas halaman"><img src="logo-128.png" width="56" height="56" alt="axac"></a>
+  <nav aria-label="Utama"><a href="#tabungan">Tabungan</a><a href="#kalkulator">Kalkulator</a></nav>
+</header>
+<main id="top">
+  <section class="total" aria-labelledby="h-total">
+    <h1 id="h-total"><span class="lbl">Total tertabung</span><span id="total" class="num">Rp 0</span></h1>
+    <p id="total-note" class="muted"></p>
+  </section>
+  <div class="cols">
+    <section id="tabungan" aria-labelledby="h-tab">
+      <h2 id="h-tab">Target tabungan</h2>
+      <form id="goal-form" class="form" novalidate>
+        <label>Nama target<input id="g-name" maxlength="40" autocomplete="off" placeholder="Nama target"></label>
+        <label>Nominal target (Rp)<input id="g-target" data-money inputmode="numeric" autocomplete="off" placeholder="5.000.000"></label>
+        <button class="btn primary" type="submit">Simpan target</button>
+        <p class="err" id="g-err" role="alert"></p>
+      </form>
+      <p id="state" role="status">Memuat tabungan...</p>
+      <ul id="goals" class="goals"></ul>
+    </section>
+    <section id="kalkulator" aria-labelledby="h-kal">
+      <h2 id="h-kal">Kalkulator</h2>
+      <div id="picker" class="picker" role="group" aria-label="Pilih kalkulator"></div>
+      <div id="panel"></div>
+    </section>
+  </div>
+</main>
+<footer class="foot"><p class="muted">Data tersimpan di browser ini saja, tidak dikirim ke mana pun.</p></footer>
+</body>
+</html>
