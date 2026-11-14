@@ -82,7 +82,16 @@
       bar.append(fill);
       if (g.saved >= g.target) li.classList.add('done');
       if (g.id === cel) { li.classList.add('hit'); setTimeout(function () { burst(bar); }, 700); }
-      var meta = el('p', 'muted', g.saved >= g.target ? 'Target tercapai.' : pct + '%, sisa ' + rp(g.target - g.saved));
+      var mt = g.saved >= g.target ? 'Target tercapai.' : pct + '%, sisa ' + rp(g.target - g.saved);
+      if (g.due && g.saved < g.target) {
+        var dd = new Date(g.due + 'T23:59:59'), mo = Math.ceil((dd - Date.now()) / 2629800000);
+        mt += ' Tenggat ' + dd.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + (mo < 1 ? ', sudah lewat.' : ', perlu ' + rp(Math.ceil((g.target - g.saved) / mo)) + ' per bulan.');
+      }
+      var meta = el('p', 'muted', mt);
+      var det = el('details', 'hist'), hs = (g.hist || []).slice().reverse(), hl = el('ul');
+      det.append(el('summary', '', 'Riwayat (' + hs.length + ')'));
+      hs.forEach(function (x) { hl.append(el('li', '', new Date(x.t).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ': ' + (x.a > 0 ? 'Setor ' : 'Tarik ') + rp(Math.abs(x.a)))); });
+      det.append(hs.length ? hl : el('p', 'muted', 'Belum ada transaksi.'));
       var f = el('form', 'tx'), lab = el('label', '', 'Jumlah (Rp)'), inp = el('input');
       inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('autocomplete', 'off'); inp.dataset.money = '';
       lab.append(inp);
@@ -97,7 +106,7 @@
         if (!confirm('Hapus target "' + g.name + '"?')) return;
         goals = goals.filter(function (x) { return x.id !== g.id; }); save(); render();
       });
-      li.append(head, bar, meta, f); ul.append(li);
+      li.append(head, bar, meta, det, f); ul.append(li);
     });
   }
   function move(id, amt, sign, err) {
@@ -106,6 +115,7 @@
     if (sign < 0 && amt > g.saved) { err.textContent = 'Penarikan melebihi saldo target ini (' + rp(g.saved) + ').'; return; }
     var was = g.saved >= g.target;
     g.saved += sign * amt;
+    (g.hist = g.hist || []).push({ t: Date.now(), a: sign * amt }); if (g.hist.length > 50) g.hist.shift();
     if (!was && g.saved >= g.target) celebrate = g.id;
     save(); render();
   }
@@ -115,7 +125,7 @@
     if (!name) { err.textContent = 'Nama target belum diisi.'; $('#g-name').focus(); return; }
     if (!target) { err.textContent = 'Nominal target harus lebih dari 0.'; $('#g-target').focus(); return; }
     err.textContent = '';
-    goals.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, target: target, saved: 0 });
+    goals.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, target: target, saved: 0, due: $('#g-due').value || '', hist: [] });
     save(); render(); e.target.reset();
   });
 
@@ -272,6 +282,59 @@
     var t = e.target;
     if (t.matches && t.matches('input[data-money]')) t.value = t.value.trim() === '' ? '' : fmt.format(digits(t.value));
   });
+
+  /* ---------- Tantangan 52 minggu ---------- */
+  var CK = 'axac:challenge:v1', ch = { base: 10000, done: [] };
+  try { var rc = JSON.parse(localStorage.getItem(CK)); if (rc && rc.base > 0 && Array.isArray(rc.done)) ch = rc; } catch (e) {}
+  function short(n) { return n >= 1e6 ? fmt2.format(n / 1e6) + 'jt' : n >= 1000 ? fmt2.format(n / 1000) + 'rb' : String(n); }
+  function chRender(focus) {
+    var w = $('#weeks'), sum = 0, all = 0, streak = 0, run = 0, i;
+    w.textContent = '';
+    for (i = 1; i <= 52; i++) {
+      var d = !!ch.done[i]; all += ch.base * i;
+      if (d) { sum += ch.base * i; run++; streak = run; } else run = 0;
+      var b = el('button', 'btn wk-b'); b.type = 'button';
+      b.append(el('b', '', String(i)), el('span', '', short(ch.base * i)));
+      b.setAttribute('aria-pressed', String(d)); b.setAttribute('aria-label', 'Minggu ' + i + ', ' + rp(ch.base * i));
+      b.addEventListener('click', (function (n) { return function () { ch.done[n] = !ch.done[n]; try { localStorage.setItem(CK, JSON.stringify(ch)); } catch (e) {} chRender(n); }; })(i));
+      w.append(b);
+    }
+    $('#ch-info').textContent = 'Terkumpul ' + rp(sum) + ' dari ' + rp(all) + '. Streak: ' + streak + ' minggu berturut-turut.';
+    if (focus) w.children[focus - 1].focus();
+  }
+  $('#ch-base').addEventListener('input', function () {
+    var v = digits(this.value); if (!v) return;
+    ch.base = v; try { localStorage.setItem(CK, JSON.stringify(ch)); } catch (e) {} chRender();
+  });
+  $('#ch-base').value = fmt.format(ch.base); chRender();
+
+  /* ---------- Backup, pulihkan, PWA ---------- */
+  function bkMsg(t) { $('#bk-msg').textContent = t; }
+  $('#bk-out').addEventListener('click', function () {
+    var blob = new Blob([JSON.stringify({ app: 'axac', v: 1, goals: goals, challenge: ch })], { type: 'application/json' });
+    var a = el('a'); a.href = URL.createObjectURL(blob); a.download = 'axac-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.append(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    bkMsg('Backup diunduh. Cek folder Download.');
+  });
+  $('#bk-in-btn').addEventListener('click', function () { $('#bk-in').click(); });
+  $('#bk-in').addEventListener('change', function () {
+    var f = this.files[0], input = this; if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var o = JSON.parse(rd.result);
+        if (o.app !== 'axac' || !Array.isArray(o.goals)) throw new Error('format');
+        o.goals.forEach(function (g) { if (typeof g.name !== 'string' || !(g.target > 0) || !(g.saved >= 0)) throw new Error('isi'); });
+        if (!confirm('Ganti semua data sekarang dengan backup ini (' + o.goals.length + ' target)?')) { bkMsg('Dibatalkan.'); return; }
+        goals = o.goals; save();
+        if (o.challenge && o.challenge.base > 0 && Array.isArray(o.challenge.done)) { ch = o.challenge; try { localStorage.setItem(CK, JSON.stringify(ch)); } catch (e) {} $('#ch-base').value = fmt.format(ch.base); chRender(); }
+        render(); bkMsg('Backup dipulihkan.');
+      } catch (e) { bkMsg('File backup tidak valid. Pakai file yang diunduh dari axac.'); }
+      input.value = '';
+    };
+    rd.readAsText(f);
+  });
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) navigator.serviceWorker.register('sw.js').catch(function () {});
 
   var tbtn = $('#theme'), root = document.documentElement;
   function theme(t, persist) {

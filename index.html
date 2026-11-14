@@ -8,14 +8,18 @@
 <title>axac | Tabungan dan kalkulator</title>
 <meta name="description" content="Catat target tabungan dan pakai kalkulator: biasa, target, bunga majemuk, cicilan, persentase, dana darurat, bagi tagihan.">
 <link rel="icon" href="logo-128.png" type="image/png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="logo-192.png">
+<meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="style.css">
 <script src="app.js" defer></script>
+<script src="games.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#tabungan">Lewati ke konten</a>
 <header class="top">
   <a class="logo" href="#top" aria-label="axac, ke atas halaman"><img src="logo-128.png" width="56" height="56" alt="axac"></a>
-  <nav aria-label="Utama"><a href="#tabungan">Tabungan</a><a href="#kalkulator">Kalkulator</a></nav>
+  <nav aria-label="Utama"><a href="#tabungan">Tabungan</a><a href="#kalkulator">Kalkulator</a><a href="#tantangan">Tantangan</a><a href="#game">Game</a></nav>
   <button type="button" class="btn theme" id="theme" aria-pressed="true" aria-label="Mode gelap">
     <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
     <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -32,6 +36,7 @@
       <form id="goal-form" class="form" novalidate>
         <label>Nama target<input id="g-name" maxlength="40" autocomplete="off" placeholder="Nama target"></label>
         <label>Nominal target (Rp)<input id="g-target" data-money inputmode="numeric" autocomplete="off" placeholder="5.000.000"></label>
+        <label>Tenggat (opsional)<input id="g-due" type="date"></label>
         <button class="btn primary" type="submit">Simpan target</button>
         <p class="err" id="g-err" role="alert"></p>
       </form>
@@ -44,7 +49,23 @@
       <div id="panel"></div>
     </section>
   </div>
+  <section id="tantangan" aria-labelledby="h-tan">
+    <h2 id="h-tan">Tantangan 52 minggu</h2>
+    <p class="muted" id="ch-info"></p>
+    <label>Setoran minggu pertama (Rp). Minggu ke-n = n kali jumlah ini.<input id="ch-base" data-money inputmode="numeric" autocomplete="off"></label>
+    <div id="weeks" class="weeks"></div>
+  </section>
+  <section id="game" aria-labelledby="h-game">
+    <h2 id="h-game">Game</h2>
+    <div id="gpick" class="picker" role="group" aria-label="Pilih game"></div>
+    <p id="gbest" class="hud" role="status"></p>
+    <div id="garea"></div>
+  </section>
 </main>
-<footer class="foot"><p class="muted">Data tersimpan di browser ini saja, tidak dikirim ke mana pun.</p></footer>
+<footer class="foot">
+  <p class="muted">Data tersimpan di browser ini saja, tidak dikirim ke mana pun. Simpan backup supaya tidak hilang.</p>
+  <div class="bk"><button type="button" class="btn" id="bk-out">Unduh backup</button><button type="button" class="btn" id="bk-in-btn">Pulihkan backup</button><input type="file" id="bk-in" accept="application/json,.json" hidden></div>
+  <p id="bk-msg" role="status" class="muted"></p>
+</footer>
 </body>
 </html>
