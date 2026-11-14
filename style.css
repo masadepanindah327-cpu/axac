@@ -105,3 +105,23 @@ body{transition:background-color .3s,color .3s}
 :root[data-theme="light"] .theme .moon{opacity:0;transform:rotate(90deg) scale(.5)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*,*::after{transition:none!important;animation:none!important}.btn:active,.key:active,.key.press{transform:none}}
+
+/* Tantangan, game, backup, perbaikan hover di layar sentuh */
+@media (hover:none){.btn:hover{background:transparent;color:var(--ink);border-color:var(--line)}.btn.primary:hover,.btn[aria-pressed=true]:hover{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}.key.op:hover{color:var(--accent-text);border-color:var(--accent-text)}}
+.tx button:nth-of-type(3){grid-column:1/-1}
+@media (min-width:600px){.tx button:nth-of-type(3){grid-column:auto}}
+.hist summary{cursor:pointer;min-height:32px;font-weight:700}.hist ul{margin:.25rem 0;padding-left:1.25rem}.hist p{margin:.25rem 0}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:.5rem;margin-top:1rem}
+.wk-b{min-height:56px;padding:0;display:grid;line-height:1.2;font-size:.8125rem;align-content:center}.wk-b b{font-size:1rem}
+#tantangan label{max-width:360px}
+.hud{margin:.5rem 0;font-weight:700;min-height:1.5em}
+.cv{display:block;width:100%;max-width:360px;aspect-ratio:3/4;touch-action:none;border:2px solid var(--line);border-radius:2px;background:var(--surface)}
+.wgrid,.mgrid,.opts{display:grid;gap:.5rem;max-width:360px;margin:.5rem 0}
+.wgrid{grid-template-columns:repeat(3,1fr)}.mgrid{grid-template-columns:repeat(4,1fr)}.opts{grid-template-columns:1fr 1fr}
+.hole{aspect-ratio:1;font-size:2rem;border:2px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);padding:0}
+.hole[data-k]{background:var(--accent);color:var(--on-accent);animation:pop .15s}.hole[data-k=bomb]{background:var(--err);color:#000}
+@keyframes pop{from{transform:scale(.4)}to{transform:scale(1)}}
+.card{aspect-ratio:1;font-size:1.75rem;border:2px solid var(--line);border-radius:2px;background:var(--surface);color:transparent;padding:0;transition:color .15s,box-shadow .2s}
+.card.open,.card.ok{color:var(--c)}.card.ok{border-color:var(--fill);box-shadow:0 0 10px rgba(var(--glow),.5)}
+.q{font:700 2.25rem var(--serif);margin:.5rem 0}
+.foot{display:grid;gap:.75rem}.foot p{margin:0}.bk{display:flex;flex-wrap:wrap;gap:.5rem}
